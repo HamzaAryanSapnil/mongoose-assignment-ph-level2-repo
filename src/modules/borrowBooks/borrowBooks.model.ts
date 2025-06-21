@@ -12,7 +12,7 @@ const borrowBookSchema = new Schema<IBorrowBooks>(
     quantity: {
       type: Number,
       required: [true, "Number Of Quantity Of a Book Is Must Required"],
-      min: [0, "Quantity must be a positive number"],
+      min: [1, "Quantity must be a positive number"],
     },
     dueDate: {
       type: Date,
@@ -47,6 +47,7 @@ borrowBookSchema.pre("save", async function (next) {
         }`
       );
       error.name = "InsufficientBookCopiesError";
+      
       return next(error);
     }
 

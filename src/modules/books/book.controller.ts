@@ -1,24 +1,53 @@
 import { Request, Response } from "express";
 import Book from "./book.model";
 import { Types } from "mongoose";
+import { booksZodSchema, updateBooksZodSchema } from "./book.zodSchema";
 
 // * Get all books
 export const getBooks = async (req: Request, res: Response) => {
   try {
-    const books = await Book.find();
+    const filterOption = req?.query?.filter as string | undefined;
+    const sortBy = req?.query?.sortBy as string | undefined;
+    const sortRule = req.query.sort as "asc" | "desc" | undefined;
+    const limit = parseInt(req.query.limit as string) || 10;
+    let query: Record<string, any> = {};
+    if (filterOption) {
+      query.genre = filterOption;
+    }
+    let sortQuery: Record<string, 1 | -1> = {};
+    if (sortBy) {
+      sortQuery[sortBy] = sortRule === "desc" ? -1 : 1;
+    }
+    const books = await Book.find(query).sort(sortQuery).limit(limit);
+
     res.status(201).send({
       success: true,
       message: "Books retrieved successfully",
       data: books,
     });
   } catch (error) {
-    console.log(error);
 
-    res.status(404).send({
-      message: "Validation Failed",
-      success: false,
-      error,
-    });
+    
+
+    if (error instanceof Error) {
+      res.status(400).send({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          message: error,
+        },
+      });
+    } else {
+      res.status(400).send({
+        message: "Unknown error occurred",
+        success: false,
+        error: {
+          name: "UnknownError",
+          message: JSON.stringify(error),
+        },
+      });
+    }
   }
 };
 // * get a single book
@@ -32,34 +61,59 @@ export const getSingleBook = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    console.log(error);
-
-    res.status(404).send({
-      message: "Validation Failed",
-      success: false,
-      error,
-    });
+    if (error instanceof Error) {
+      res.status(400).send({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          message: error,
+        },
+      });
+    } else {
+      res.status(400).send({
+        message: "Unknown error occurred",
+        success: false,
+        error: {
+          name: "UnknownError",
+          message: JSON.stringify(error),
+        },
+      });
+    }
   }
 };
 // * save books
 export const postBook = async (req: Request, res: Response) => {
   try {
     const payload = req.body;
+    const parsedData = await booksZodSchema.parseAsync(payload);
 
-    const data = await Book.create(payload);
+    const data = await Book.create(parsedData);
     res.status(201).send({
       success: true,
       message: "Book Created Successfully",
       data,
     });
   } catch (error) {
-    console.log(error);
-
-    res.status(404).send({
-      message: "Validation Failed",
-      success: false,
-      error,
-    });
+    if (error instanceof Error) {
+      res.status(400).send({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          message: error,
+        },
+      });
+    } else {
+      res.status(400).send({
+        message: "Unknown error occurred",
+        success: false,
+        error: {
+          name: "UnknownError",
+          message: JSON.stringify(error),
+        },
+      });
+    }
   }
 };
 // * update a book
@@ -67,25 +121,38 @@ export const updateBook = async (req: Request, res: Response) => {
   try {
     const bookId = req.params.bookId;
     const payload = req.body;
-    await Book.findOneAndUpdate({ _id: bookId }, payload, {
+    const parsedData = await updateBooksZodSchema.parseAsync(payload);
+    await Book.findOneAndUpdate({ _id: bookId }, parsedData, {
       runValidators: true,
       new: true,
     });
     await Book.updateAvailability(bookId);
-    const data =await Book.findById(bookId);
+    const data = await Book.findById(bookId);
     res.status(201).send({
       success: true,
       message: "Book Updated Successfully",
       data,
     });
   } catch (error) {
-    console.log(error);
-
-    res.status(404).send({
-      message: "Validation Failed",
-      success: false,
-      error,
-    });
+    if (error instanceof Error) {
+      res.status(400).send({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          message: error,
+        },
+      });
+    } else {
+      res.status(400).send({
+        message: "Unknown error occurred",
+        success: false,
+        error: {
+          name: "UnknownError",
+          message: JSON.stringify(error),
+        },
+      });
+    }
   }
 };
 
@@ -100,12 +167,24 @@ export const deleteSingleBook = async (req: Request, res: Response) => {
       data: null,
     });
   } catch (error) {
-    console.log(error);
-
-    res.status(404).send({
-      message: "Validation Failed",
-      success: false,
-      error,
-    });
+    if (error instanceof Error) {
+      res.status(400).send({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          message: error,
+        },
+      });
+    } else {
+      res.status(400).send({
+        message: "Unknown error occurred",
+        success: false,
+        error: {
+          name: "UnknownError",
+          message: JSON.stringify(error),
+        },
+      });
+    }
   }
 };

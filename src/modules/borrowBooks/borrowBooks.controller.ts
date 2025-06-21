@@ -1,21 +1,40 @@
 import { Request, Response } from "express";
 import BorrowBook from "./borrowBooks.model";
 import Book from "../books/book.model";
+import { borrowedBooksZodSchema } from "./borrowBooks.zod.schema";
+import { ZodError } from "zod";
 
 // * Save borrow book
 export const saveBorrowBook = async (req: Request, res: Response) => {
   try {
     const payload = req.body;
-    const data = await BorrowBook.create(payload);
+    const parsedData = await borrowedBooksZodSchema.parseAsync(payload);
+    const data = await BorrowBook.create(parsedData);
     await Book.updateAvailability(data.book);
     res.status(201).send({
       success: true,
       message: "Book borrowed successfully",
       data,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+    
+      return res.status(400).json({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          issues: error.errors.map((e) => ({
+            path: e.path.join("."),
+            message: e.message,
+          })),
+        },
+      });
+    }
+
     if (error instanceof Error) {
-      res.status(400).send({
+    
+      return res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: {
@@ -23,16 +42,17 @@ export const saveBorrowBook = async (req: Request, res: Response) => {
           message: error.message,
         },
       });
-    } else {
-      res.status(400).send({
-        message: "Unknown error occurred",
-        success: false,
-        error: {
-          name: "UnknownError",
-          message: JSON.stringify(error),
-        },
-      });
     }
+
+   
+    return res.status(500).json({
+      message: "Unknown error occurred",
+      success: false,
+      error: {
+        name: "UnknownError",
+        message: JSON.stringify(error),
+      },
+    });
   }
 };
 
@@ -69,13 +89,39 @@ export const borrowedBookSummery = async (req: Request, res: Response) => {
       message: "Borrowed books summary retrieved successfully",
       data,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          issues: error.errors.map((e) => ({
+            path: e.path.join("."),
+            message: e.message,
+          })),
+        },
+      });
+    }
 
-    res.status(404).send({
-      message: "Validation Failed",
+    if (error instanceof Error) {
+      return res.status(400).json({
+        message: "Validation Failed",
+        success: false,
+        error: {
+          name: error.name,
+          message: error.message,
+        },
+      });
+    }
+
+    return res.status(500).json({
+      message: "Unknown error occurred",
       success: false,
-      error,
+      error: {
+        name: "UnknownError",
+        message: JSON.stringify(error),
+      },
     });
   }
 };

@@ -51,7 +51,6 @@ const bookSchema = new Schema<IBooks, BookStaticMethods>(
 bookSchema.static(
   "updateAvailability",
   async function updateAvailability(bookId: Schema.Types.ObjectId) {
-    console.log("From static method of bookschema", this);
 
     const book = await this.findById(bookId);
     if (book && book.copies === 0 && book.available === true) {
