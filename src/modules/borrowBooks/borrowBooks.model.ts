@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { CallbackError, model, Schema } from "mongoose";
 import { IBorrowBooks } from "./borrowBooks.interface";
 import Book from "../books/book.model";
 
@@ -52,8 +52,8 @@ borrowBookSchema.pre("save", async function (next) {
     }
 
     next();
-  } catch (err: any) {
-    next(err);
+  } catch (err) {
+    next(err as CallbackError );
   }
 });
 

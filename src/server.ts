@@ -2,8 +2,6 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import config from "./config";
-import booksRoute from "./modules/books/book.routes";
-import { borrowedBooksRoute } from "./modules/borrowBooks/borrowBooks.routes";
 import routes from "./modules/routes";
 
 const app = express();

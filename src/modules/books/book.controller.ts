@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Book from "./book.model";
-import { Types } from "mongoose";
 import { booksZodSchema, updateBooksZodSchema } from "./book.zodSchema";
 
 // * Get all books
@@ -10,11 +9,12 @@ export const getBooks = async (req: Request, res: Response) => {
     const sortBy = req?.query?.sortBy as string | undefined;
     const sortRule = req.query.sort as "asc" | "desc" | undefined;
     const limit = parseInt(req.query.limit as string) || 10;
-    let query: Record<string, any> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query: Record<string, any> = {};
     if (filterOption) {
       query.genre = filterOption;
     }
-    let sortQuery: Record<string, 1 | -1> = {};
+    const sortQuery: Record<string, 1 | -1> = {};
     if (sortBy) {
       sortQuery[sortBy] = sortRule === "desc" ? -1 : 1;
     }

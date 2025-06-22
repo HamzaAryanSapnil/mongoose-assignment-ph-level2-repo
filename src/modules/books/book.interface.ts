@@ -19,3 +19,4 @@ export interface IBooks {
 export interface BookStaticMethods extends Model<IBooks> {
   updateAvailability(bookId: Types.ObjectId | string): Promise<void>;
 }
+
