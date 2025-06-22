@@ -46,7 +46,7 @@ const getBooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 success: false,
                 error: {
                     name: error.name,
-                    message: error,
+                    message: error.message,
                 },
             });
         }

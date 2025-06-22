@@ -32,7 +32,7 @@ export const getBooks = async (req: Request, res: Response): Promise<void> => {
         success: false,
         error: {
           name: error.name,
-          message: error,
+          message: error.message,
         },
       });
     } else {
