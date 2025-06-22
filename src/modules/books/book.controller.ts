@@ -64,7 +64,7 @@ export const getSingleBook = async (req: Request, res: Response): Promise<void> 
         success: false,
         error: {
           name: error.name,
-          message: error.message,
+          message: error,
         },
       });
     } else {
