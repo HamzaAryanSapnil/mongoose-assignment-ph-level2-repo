@@ -5,7 +5,7 @@ import { borrowedBooksZodSchema } from "./borrowBooks.zod.schema";
 import { ZodError } from "zod";
 
 // * Save borrow book
-export const saveBorrowBook = async (req: Request, res: Response) => {
+export const saveBorrowBook = async (req: Request, res: Response): Promise<void> => {
   try {
     const payload = req.body;
     const parsedData = await borrowedBooksZodSchema.parseAsync(payload);
@@ -16,10 +16,10 @@ export const saveBorrowBook = async (req: Request, res: Response) => {
       message: "Book borrowed successfully",
       data,
     });
-  } catch (error: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error instanceof ZodError) {
-    
-      return res.status(400).json({
+       res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: {
@@ -33,8 +33,7 @@ export const saveBorrowBook = async (req: Request, res: Response) => {
     }
 
     if (error instanceof Error) {
-    
-      return res.status(400).json({
+       res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: {
@@ -44,8 +43,7 @@ export const saveBorrowBook = async (req: Request, res: Response) => {
       });
     }
 
-   
-    return res.status(500).json({
+     res.status(500).json({
       message: "Unknown error occurred",
       success: false,
       error: {
@@ -56,7 +54,7 @@ export const saveBorrowBook = async (req: Request, res: Response) => {
   }
 };
 
-export const borrowedBookSummery = async (req: Request, res: Response) => {
+export const borrowedBookSummery = async (req: Request, res: Response): Promise<void> => {
   try {
     const data = await BorrowBook.aggregate([
       {
@@ -91,7 +89,7 @@ export const borrowedBookSummery = async (req: Request, res: Response) => {
     });
   } catch (error: unknown) {
     if (error instanceof ZodError) {
-      return res.status(400).json({
+       res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: {
@@ -105,7 +103,7 @@ export const borrowedBookSummery = async (req: Request, res: Response) => {
     }
 
     if (error instanceof Error) {
-      return res.status(400).json({
+       res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: {
@@ -115,7 +113,7 @@ export const borrowedBookSummery = async (req: Request, res: Response) => {
       });
     }
 
-    return res.status(500).json({
+     res.status(500).json({
       message: "Unknown error occurred",
       success: false,
       error: {

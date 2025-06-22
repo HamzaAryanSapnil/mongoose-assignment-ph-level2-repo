@@ -3,7 +3,7 @@ import Book from "./book.model";
 import { booksZodSchema, updateBooksZodSchema } from "./book.zodSchema";
 
 // * Get all books
-export const getBooks = async (req: Request, res: Response) => {
+export const getBooks = async (req: Request, res: Response): Promise<void> => {
   try {
     const filterOption = req?.query?.filter as string | undefined;
     const sortBy = req?.query?.sortBy as string | undefined;
@@ -26,9 +26,6 @@ export const getBooks = async (req: Request, res: Response) => {
       data: books,
     });
   } catch (error) {
-
-    
-
     if (error instanceof Error) {
       res.status(400).send({
         message: "Validation Failed",
@@ -51,7 +48,7 @@ export const getBooks = async (req: Request, res: Response) => {
   }
 };
 // * get a single book
-export const getSingleBook = async (req: Request, res: Response) => {
+export const getSingleBook = async (req: Request, res: Response): Promise<void> => {
   try {
     const bookId = req.params.bookId;
     const data = await Book.findById(bookId);
@@ -83,7 +80,7 @@ export const getSingleBook = async (req: Request, res: Response) => {
   }
 };
 // * save books
-export const postBook = async (req: Request, res: Response) => {
+export const postBook = async (req: Request, res: Response): Promise<void> => {
   try {
     const payload = req.body;
     const parsedData = await booksZodSchema.parseAsync(payload);
@@ -117,7 +114,7 @@ export const postBook = async (req: Request, res: Response) => {
   }
 };
 // * update a book
-export const updateBook = async (req: Request, res: Response) => {
+export const updateBook = async (req: Request, res: Response): Promise<void> => {
   try {
     const bookId = req.params.bookId;
     const payload = req.body;
@@ -157,7 +154,7 @@ export const updateBook = async (req: Request, res: Response) => {
 };
 
 // * delete single books
-export const deleteSingleBook = async (req: Request, res: Response) => {
+export const deleteSingleBook = async (req: Request, res: Response): Promise<void> => {
   try {
     const bookId = req.params.bookId;
     await Book.findByIdAndDelete(bookId);
